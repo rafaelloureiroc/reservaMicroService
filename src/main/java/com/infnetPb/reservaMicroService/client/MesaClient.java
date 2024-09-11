@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.UUID;
 
-@FeignClient(name = "mesa-service", url = "http://localhost:8082")
+@FeignClient(name = "mesa-service", url = "http://mesa-service:8082")
 public interface MesaClient {
 
     @GetMapping("/mesas/{id}")
