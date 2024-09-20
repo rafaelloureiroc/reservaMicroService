@@ -1,5 +1,6 @@
 package com.infnetPb.reservaMicroService.listener;
 
+import com.infnetPb.reservaMicroService.client.NotificationClient;
 import com.infnetPb.reservaMicroService.event.MesaReservadaEvent;
 import org.apache.log4j.Logger;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -17,10 +18,25 @@ public class MesaReservadaListener {
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
 
+    @Autowired
+    private NotificationClient notificationClient;
+
     @RabbitListener(queues = "mesaReservadaQueue")
     public void handleMesaReservadaEvent(MesaReservadaEvent event) {
 
         logger.info("Recebido evento mesaReservada: "+ event);
+
+        NotificationClient.NotificationRequest notificationRequest = new NotificationClient.NotificationRequest();
+        notificationRequest.setTo("rafaelloureiro2002@gmail.com");
+        notificationRequest.setSubject("Nova Reserva Criada");
+        notificationRequest.setBody("Uma nova reserva foi criada.");
+
+        try {
+            notificationClient.sendNotification(notificationRequest);
+            logger.info("Notificação enviada com sucesso.");
+        } catch (Exception e) {
+            logger.error("Falha ao comunicar com serviço de notificação: " + e.getMessage());
+        }
 
         boolean success = processEventWithRetry(event);
 

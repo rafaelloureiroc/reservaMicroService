@@ -5,7 +5,6 @@ import com.infnetPb.reservaMicroService.DTO.MesaDTO;
 import com.infnetPb.reservaMicroService.DTO.ReservaDTO;
 import com.infnetPb.reservaMicroService.DTO.RestauranteDTO;
 import com.infnetPb.reservaMicroService.client.MesaClient;
-import com.infnetPb.reservaMicroService.client.NotificationClient;
 import com.infnetPb.reservaMicroService.client.RestauranteClient;
 import com.infnetPb.reservaMicroService.event.MesaReservadaEvent;
 import com.infnetPb.reservaMicroService.model.Reserva;
@@ -34,9 +33,6 @@ public class ReservaService {
 
     @Autowired
     private ReservaHistoryRepository reservaHistoryRepository;
-
-    @Autowired
-    private NotificationClient notificationClient;
 
     @Autowired
     private RestauranteClient restauranteClient;
@@ -87,17 +83,6 @@ public class ReservaService {
                 restaurante.getId(),
                 reserva.getDataReserva());
 
-        NotificationClient.NotificationRequest notificationRequest = new NotificationClient.NotificationRequest();
-        notificationRequest.setTo("rafaelloureiro2002@gmail.com");
-        notificationRequest.setSubject("Nova Reserva Criada");
-        notificationRequest.setBody("Uma nova reserva foi criada.");
-
-        try {
-            notificationClient.sendNotification(notificationRequest);
-            logger.info("Notificação enviada com sucesso.");
-        } catch (Exception e) {
-            logger.error("Falha ao comunicar com serviço de notificação: " + e.getMessage());
-        }
 
         logger.info("Tentando enviar evento MesaReservada: " + event);
 
